@@ -173,6 +173,8 @@ check_running() {
 
 cleanup() {
 	echo "Cleaning up!"
+	# Using path from tkbash, not TMPDIR
+	rm -rf "/tmp/__redflux-tkbash1.0_/"
 }
 
 restart() {
@@ -256,6 +258,7 @@ then
 
 else
 	check_running "$@"
+	cleanup
 	LISTEN=0
 	REGHOTKEYS=1
 	TRAY=1
