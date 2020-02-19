@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=RedFlux
+Icon=redflux
+Exec=redflux-gui

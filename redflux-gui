@@ -10,7 +10,7 @@ SCRIPTNAME=bash\ "$SCRIPTPATH"
 #echo $SCRIPTPATH
 #echo $SCRIPTNAME
 REDFLUXNAME="redflux"
-TKBASHNAME="./redflux-tkbash"
+TKBASHNAME="redflux-tkbash"
 GUINAME="redflux-gui"
 GUIALREADYRUNNINGNAME="redflux-gui-already-running"
 PID="$$"
