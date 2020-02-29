@@ -135,7 +135,10 @@ then
 		fi
         	echo "Setting" "$CURRTEMP""K..."
 		echo $CURRTEMP > $CURRFILE
-		callredshift $CURRTEMP
+		if ! [ -f $CURRDISFILE ]
+		then
+			callredshift $CURRTEMP
+		fi
 		echo "Set at "$CURRTEMP"K!"
 		notification "Temp set at "$CURRTEMP"K!"
 		exit 0
@@ -198,7 +201,10 @@ then
 		exit 1
 	fi
 	echo $CURRTEMP > $CURRFILE
-	callredshift $CURRTEMP
+	if ! [ -f $CURRDISFILE ]
+	then
+		callredshift $CURRTEMP
+	fi
 	echo "Set at "$CURRTEMP"K!"
 	notification "Temp set at "$CURRTEMP"K!"
 	exit 0
