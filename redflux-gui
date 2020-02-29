@@ -115,14 +115,22 @@ tray-init() {
 	echo "1" > "$TRAYSTATEFILE"
 }
 
+tray-show() {
+		$TKBASHNAME $GUINAME --show
+}
+
+tray-hide() {
+		$TKBASHNAME $GUINAME --hide
+}
+
 tray-toggle() {
 	TRAYSTATE=$(cat $TRAYSTATEFILE)
 	if [[ $TRAYSTATE -eq 1 ]]
 	then
-		$TKBASHNAME $GUINAME --hide
+		tray-hide
 		echo "0" > $TRAYSTATEFILE
 	else
-		$TKBASHNAME $GUINAME --show
+		tray-show
 		echo "1" > $TRAYSTATEFILE
 	fi
 }
@@ -262,6 +270,7 @@ else
 	LISTEN=0
 	REGHOTKEYS=1
 	TRAY=1
+	STARTHIDDEN=0
 	for var in "$@"
 	do
 		if [[ $var = "--listen" ]]
@@ -282,6 +291,12 @@ else
 		elif [[ $var = "--no-tray" ]]
 		then
 			TRAY=0
+		elif [[ $var = "--start-hidden" ]]
+		then
+			STARTHIDDEN=1
+		elif [[ $var = "--no-start-hidden" ]]
+		then
+			STARTHIDDEN=0
 		fi
 	done
 	if ! which yad
@@ -292,6 +307,7 @@ else
 	echo "LISTEN = $LISTEN"
 	echo "REGHOTKEYS = $REGHOTKEYS"
 	echo "TRAY = $TRAY"
+	echo "STARTHIDDEN = $STARTHIDDEN"
 	draw_gui
 	update
 	if [[ $REGHOTKEYS -eq 1 ]]
@@ -301,6 +317,10 @@ else
 	if [[ $TRAY -eq 1 ]]
 	then
 		tray-init
+		if [[ $STARTHIDDEN -eq 1 ]]
+		then
+			tray-hide
+		fi
 	fi
 	if [[ $LISTEN -eq 1 ]]
 	then
