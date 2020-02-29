@@ -64,7 +64,7 @@ then
 fi
 #echo $CURRTEMP
 if [[ $CURRTEMP = "" ]]
-	then
+then
 	echo "Not configured, setting to "$DEFAULTTEMP"K..."
 	CURRTEMP=$DEFAULTTEMP
 	echo $DEFAULTTEMP > $CURRFILE
@@ -73,7 +73,7 @@ fi
 
 if [[ $ACTION != "getinfo" ]]
 then
-echo "Current temp: "$CURRTEMP"K"
+	echo "Current temp: "$CURRTEMP"K"
 fi
 
 #echo $ACTION
