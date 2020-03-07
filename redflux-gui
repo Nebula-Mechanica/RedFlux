@@ -310,24 +310,36 @@ else
 	echo "STARTHIDDEN = $STARTHIDDEN"
 	draw_gui
 	update
+	
 	if [[ $REGHOTKEYS -eq 1 ]]
 	then
 		reghotkeys
 	fi
+	
 	if [[ $TRAY -eq 1 ]]
 	then
 		tray-init
-		if [[ $STARTHIDDEN -eq 1 ]]
+	fi
+	
+	# If start-hidden and tray enabled, then hide to tray
+	# Else if tray not enabled, then just minimize window
+	if [[ $STARTHIDDEN -eq 1 ]]
+	then
+		if [[ $TRAY -eq 1 ]]
 		then
 			tray-toggle
+		else
+			$TKBASHNAME $GUINAME --iconify
 		fi
 	fi
+	
 	if [[ $LISTEN -eq 1 ]]
 	then
 		track
 	else
 		$TKBASHNAME $GUINAME button update -x 165 -y 28 -w 60 -h 30 --text "Refresh" --command "$SCRIPTNAME update"
 	fi
+	
 	exit 0
 
 fi
