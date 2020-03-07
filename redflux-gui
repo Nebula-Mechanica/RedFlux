@@ -319,7 +319,7 @@ else
 		tray-init
 		if [[ $STARTHIDDEN -eq 1 ]]
 		then
-			tray-hide
+			tray-toggle
 		fi
 	fi
 	if [[ $LISTEN -eq 1 ]]
