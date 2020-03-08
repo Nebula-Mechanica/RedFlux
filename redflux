@@ -9,7 +9,11 @@ NOTIFYCOMMAND="notify-send"
 NOTIFYARGS="-a RedFlux -t 500 --icon=$ICONLOC"
 REDFLUXGUICOMMAND="redflux-gui"
 REDFLUXGUIARGS=""
+# Notifications feature. On by default. Absence of libnotify is detected and redflux continues to work without it showing you a warning.
+# If you do not warning, you can use --no-notifications key or change this variable to 0
 NOTIFICATIONS=1
+# Send updates to redflux-gui feature. On by default. Absence of redflux-gui is detected and redflux continues to work without it showing you a warning.
+# If you do not warning, you can use --no-send-update key or change this variable to 0
 SENDUPDATES=1
 
 ACTION="$1"
@@ -23,7 +27,7 @@ NATURALTEMP="6500"
 MAXTEMP="6500"
 # Limitation of RedShift
 MINTEMP="1000"
-# Default temperature, could be safely adjusted to your comfortable
+# Default temperature, could be safely adjusted to one comfortable for you
 DEFAULTTEMP="4200"
 
 callredshift() {
@@ -53,6 +57,7 @@ send-update() {
 	then
 		if which $REDFLUXGUICOMMAND 2>/dev/null 1>/dev/null
 		then
+			echo "Sending update..."
 			$REDFLUXGUICOMMAND update $REDFLUXGUIARGS
 		else
 			echo "$REDFLUXGUICOMMAND not found! Send updates disabled. Install redflux-gui or add '--no-send-updates' key to hide warning!" 
@@ -122,6 +127,7 @@ then
 elif [[ $ACTION = "disable" ]]
 then 
 	echo "Disabling..."
+	notification "RedFlux disabled!"
 	callredshift $NATURALTEMP
 	touch $CURRDISFILE
 	send-update
@@ -129,6 +135,7 @@ then
 elif [[ $ACTION = "enable" ]]
 then 
 	echo "Enabling..."
+	notification "RedFlux enabled!"
 	callredshift $CURRTEMP
 	rm -f $CURRDISFILE
 	send-update
