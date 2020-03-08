@@ -42,7 +42,7 @@ notification() {
 		then
 			$NOTIFYCOMMAND "$1 - RedFlux" $NOTIFYARGS
 		else
-			echo "$NOTIFYCOMMAND not found! Install or add '--no-notifications' key to hide warning!"
+			echo "$NOTIFYCOMMAND not found! Notifications not functional. Install libnotify or add '--no-notifications' key to hide warning!"
 		fi
 	fi
 	echo "$1"
@@ -54,6 +54,8 @@ send-update() {
 		if which $REDFLUXGUICOMMAND 2>/dev/null 1>/dev/null
 		then
 			$REDFLUXGUICOMMAND update $REDFLUXGUIARGS
+		else
+			echo "$REDFLUXGUICOMMAND not found! Send updates disabled. Install redflux-gui or add '--no-send-updates' key to hide warning!" 
 		fi
 	fi
 }
@@ -73,7 +75,7 @@ do
 		if [[ $var = "--send-updates" ]]
 		then
 			SENDUPDATES=1
-		elif [[ $var = "--send-updates" ]]
+		elif [[ $var = "--no-send-updates" ]]
 		then
 			SENDUPDATES=0
 		fi
