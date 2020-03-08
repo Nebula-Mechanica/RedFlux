@@ -65,7 +65,42 @@ send-update() {
 	fi
 }
 
-CURRTEMP=$(cat $CURRFILE)
+enable() {
+	echo "Enabling..."
+	notification "RedFlux enabled!"
+	callredshift $CURRTEMP
+	rm -f $CURRDISFILE
+	send-update
+}
+
+disable() {
+	echo "Disabling..."
+	notification "RedFlux disabled!"
+	callredshift $NATURALTEMP
+	touch $CURRDISFILE
+	send-update
+}
+
+set_temp() {
+	SETTEMP="$1"
+	if (( "$SETTEMP" < $MINTEMP )) || (("$SETTEMP" > $MAXTEMP))
+	then
+		echo "Out of range!"
+		exit 1
+	fi
+		echo "Setting" "$SETTEMP""K..."
+	echo $SETTEMP > $CURRFILE
+	CURRTEMP=$SETTEMP
+	if ! [ -f $CURRDISFILE ]
+	then
+		callredshift $CURRTEMP
+	fi
+	echo "Set at "$CURRTEMP"K!"
+	send-update
+	notification "Temp set at "$CURRTEMP"K!"
+}
+
+CURRTEMP="$(cat $CURRFILE)"
 
 # Parsing command line option keys
 for var in "$@"
@@ -126,37 +161,21 @@ then
 
 elif [[ $ACTION = "disable" ]]
 then 
-	echo "Disabling..."
-	notification "RedFlux disabled!"
-	callredshift $NATURALTEMP
-	touch $CURRDISFILE
-	send-update
+	disable
 	exit 0
 elif [[ $ACTION = "enable" ]]
 then 
-	echo "Enabling..."
-	notification "RedFlux enabled!"
-	callredshift $CURRTEMP
-	rm -f $CURRDISFILE
-	send-update
+	enable
 	exit 0
 
 elif [[ $ACTION = "toggle" ]]
 then 
 	if [ -f $CURRDISFILE ]
 	then
-		echo "Enabling..."
-		notification "RedFlux enabled!"
-		callredshift $CURRTEMP
-		rm -f $CURRDISFILE
-		send-update
+		enable
 		exit 0
 	else
-		echo "Disabling..."
-		notification "RedFlux disabled!"
-		callredshift $NATURALTEMP
-		touch $CURRDISFILE
-		send-update
+		disable
 		exit 0
 	fi
 
@@ -165,21 +184,7 @@ elif [[ $ACTION = "set" ]]
 then 
 	if ! echo "$2" | grep [^0-9+\-] -q
 	then
-		CURRTEMP=$2
-		if (( "$CURRTEMP" < $MINTEMP )) || (("$CURRTEMP" > $MAXTEMP))
-		then
-			echo "Out of range!"
-			exit 1
-		fi
-        	echo "Setting" "$CURRTEMP""K..."
-		echo $CURRTEMP > $CURRFILE
-		if ! [ -f $CURRDISFILE ]
-		then
-			callredshift $CURRTEMP
-		fi
-		echo "Set at "$CURRTEMP"K!"
-		send-update
-		notification "Temp set at "$CURRTEMP"K!"
+		set_temp $2
 		exit 0
 	else
 		echo "Wrong syntax!"
@@ -233,20 +238,8 @@ then
 elif ! echo "$ACTION" | grep [^0-9+\-] -q
 then
 	echo "Modyfing ""$ACTION""K..."
-	CURRTEMP=$(($CURRTEMP + $ACTION))
-	if (( "$CURRTEMP" < $MINTEMP )) || (("$CURRTEMP" > $MAXTEMP))
-	then
-		echo "Out of range!"
-		exit 1
-	fi
-	echo $CURRTEMP > $CURRFILE
-	if ! [ -f $CURRDISFILE ]
-	then
-		callredshift $CURRTEMP
-	fi
-	echo "Set at "$CURRTEMP"K!"
-	send-update
-	notification "Temp set at "$CURRTEMP"K!"
+	MODTEMP=$(($CURRTEMP + $ACTION))
+	set_temp $MODTEMP
 	exit 0
 else
 	echo "Wrong syntax!"
