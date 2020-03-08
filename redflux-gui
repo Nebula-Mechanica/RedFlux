@@ -146,7 +146,7 @@ check_running() {
 		$TKBASHNAME $GUIALREADYRUNNINGNAME --theme clam --title "RedFlux GUI Warning" -w 250 -h 100
 		$TKBASHNAME $GUIALREADYRUNNINGNAME label already-label-1 -x 15 -y 5 -w 200 -h 30 --text "RedFlux GUI is already running!"
 		$TKBASHNAME $GUIALREADYRUNNINGNAME label already-label-2 -x 15 -y 25 -w 200 -h 30 --text "Do you want to restart it?"
-		$TKBASHNAME $GUIALREADYRUNNINGNAME button already-restart -x 30 -y 55 -w 80 -h 30 --text "Restart" --command "$TKBASHNAME $GUIALREADYRUNNINGNAME --close;sleep 2;$SCRIPTNAME restart \"$RUNPARAMS\""
+		$TKBASHNAME $GUIALREADYRUNNINGNAME button already-restart -x 30 -y 55 -w 80 -h 30 --text "Restart" --command "$TKBASHNAME $GUIALREADYRUNNINGNAME --close;$SCRIPTNAME restart \"$RUNPARAMS\""
 		$TKBASHNAME $GUIALREADYRUNNINGNAME button already-cancel -x 130 -y 55 -w 80 -h 30 --text "Cancel" --command "$TKBASHNAME $GUIALREADYRUNNINGNAME --close"
 		exit 1
 	fi
@@ -161,8 +161,16 @@ cleanup() {
 restart() {
 	sleep 2
 	echo "Stopping instance!"
-	$TKBASHNAME $GUINAME --close
+	$TKBASHNAME $GUINAME --close &
 	sleep 2
+	killall -r redflux-tkbash
+	pkill -9 -f "yad.*redflux-gui"
+	sleep 2
+	if ! [[ -z $(pgrep redflux-tkbash) ]]
+	then
+		killall -s SIGKILL -r redflux-tkbash
+		sleep 2
+	fi
 }
 
 if [[ $ACTION = "update" ]]

@@ -58,7 +58,7 @@ send-update() {
 		if which $REDFLUXGUICOMMAND 2>/dev/null 1>/dev/null
 		then
 			echo "Sending update..."
-			$REDFLUXGUICOMMAND update $REDFLUXGUIARGS
+			$REDFLUXGUICOMMAND update $REDFLUXGUIARGS &
 		else
 			echo "$REDFLUXGUICOMMAND not found! Send updates disabled. Install redflux-gui or add '--no-send-updates' key to hide warning!" 
 		fi
