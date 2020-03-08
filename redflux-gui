@@ -77,7 +77,7 @@ update() {
 		$TKBASHNAME $GUINAME button currtemp --text "$($REDFLUXNAME getinfo currtemp)K"
 		$TKBASHNAME $GUINAME button state --text "$($REDFLUXNAME getinfo state)"
 	else
-		exit 1
+		exit
 	fi
 }
 

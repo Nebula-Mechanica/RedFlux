@@ -7,7 +7,10 @@ ICONLOC="$TMPDIR/redflux.png"
 
 NOTIFYCOMMAND="notify-send"
 NOTIFYARGS="-a RedFlux -t 500 --icon=$ICONLOC"
+REDFLUXGUICOMMAND="redflux-gui"
+REDFLUXGUIARGS=""
 NOTIFICATIONS=1
+SENDUPDATES=1
 
 ACTION="$1"
 CURRFILE="$TMPDIR/.redflux_currtemp_$USER"
@@ -45,8 +48,19 @@ notification() {
 	echo "$1"
 }
 
+send-update() {
+	if [[ $SENDUPDATES -eq 1 ]]
+	then
+		if which $REDFLUXGUICOMMAND 2>/dev/null 1>/dev/null
+		then
+			$REDFLUXGUICOMMAND update $REDFLUXGUIARGS
+		fi
+	fi
+}
+
 CURRTEMP=$(cat $CURRFILE)
 
+# Parsing command line option keys
 for var in "$@"
 do
 		if [[ $var = "--notifications" ]]
@@ -55,6 +69,13 @@ do
 		elif [[ $var = "--no-notifications" ]]
 		then
 			NOTIFICATIONS=0
+		fi
+		if [[ $var = "--send-updates" ]]
+		then
+			SENDUPDATES=1
+		elif [[ $var = "--send-updates" ]]
+		then
+			SENDUPDATES=0
 		fi
 done
 
@@ -69,6 +90,7 @@ then
 	CURRTEMP=$DEFAULTTEMP
 	echo $DEFAULTTEMP > $CURRFILE
 	callredshift $DEFAULTTEMP
+	send-update
 fi
 
 if [[ $ACTION != "getinfo" ]]
@@ -82,6 +104,7 @@ then
 	echo "Initialiazing..."
 	echo $DEFAULTTEMP > $CURRFILE
 	callredshift $DEFAULTTEMP
+	send-update
 	exit 0
 
 elif [[ $ACTION = "reset" ]]
@@ -90,6 +113,8 @@ then
 	notification "Temp resetted to "$DEFAULTTEMP"K!"
 	echo $DEFAULTTEMP > $CURRFILE
 	callredshift $DEFAULTTEMP
+	rm -f $CURRDISFILE
+	send-update
 	exit 0
 
 elif [[ $ACTION = "disable" ]]
@@ -97,12 +122,14 @@ then
 	echo "Disabling..."
 	callredshift $NATURALTEMP
 	touch $CURRDISFILE
+	send-update
 	exit 0
 elif [[ $ACTION = "enable" ]]
 then 
 	echo "Enabling..."
 	callredshift $CURRTEMP
 	rm -f $CURRDISFILE
+	send-update
 	exit 0
 
 elif [[ $ACTION = "toggle" ]]
@@ -113,12 +140,14 @@ then
 		notification "RedFlux enabled!"
 		callredshift $CURRTEMP
 		rm -f $CURRDISFILE
+		send-update
 		exit 0
 	else
 		echo "Disabling..."
 		notification "RedFlux disabled!"
 		callredshift $NATURALTEMP
 		touch $CURRDISFILE
+		send-update
 		exit 0
 	fi
 
@@ -140,6 +169,7 @@ then
 			callredshift $CURRTEMP
 		fi
 		echo "Set at "$CURRTEMP"K!"
+		send-update
 		notification "Temp set at "$CURRTEMP"K!"
 		exit 0
 	else
@@ -206,6 +236,7 @@ then
 		callredshift $CURRTEMP
 	fi
 	echo "Set at "$CURRTEMP"K!"
+	send-update
 	notification "Temp set at "$CURRTEMP"K!"
 	exit 0
 else
