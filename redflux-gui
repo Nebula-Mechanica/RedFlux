@@ -26,6 +26,8 @@ TRAYSTATEFILE="$TMPDIR/redflux-gui_tray_state_$USER"
 MAXTEMP="6500"
 # Limitation of RedShift
 MINTEMP="1000"
+# Amount of temperature added or substracted when buttons "Warmer" or "Colder" used
+TWEAKTEMP="200"
 
 draw_gui() {
 echo "Drawing GUI"
@@ -170,13 +172,13 @@ then
 
 elif [[ $ACTION = "increase" ]]
 then
-	$REDFLUXNAME 200
+	$REDFLUXNAME $TWEAKTEMP
 	update
 	exit 0
 
 elif [[ $ACTION = "decrease" ]]
 then
-	$REDFLUXNAME -200
+	$REDFLUXNAME -$TWEAKTEMP
 	update
 	exit 0
 
