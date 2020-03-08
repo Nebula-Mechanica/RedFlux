@@ -94,7 +94,7 @@ reghotkeys() {
 }
 
 tray-init() {
-	yad --notification --image="$ICONLOC" --command="$SCRIPTNAME tray-toggle" --text="RedFlux GUI Show/Hide" &
+	yad --notification --image="$ICONLOC" --no-middle --command="$SCRIPTNAME tray-toggle" --text="RedFlux GUI Show/Hide" &
 	echo "$!" > "$TRAYPIDFILE"
 	echo "1" > "$TRAYSTATEFILE"
 }
