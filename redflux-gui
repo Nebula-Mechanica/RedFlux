@@ -72,11 +72,17 @@ $TKBASHNAME $GUINAME label presets-disabled-color -x 250 -y 360 -w 20 -h 20 --ba
 }
 
 update() {
-	if [[ $($TKBASHNAME $GUINAME --exist) = 1 ]]
+	RUNNINGPID=$(pgrep redflux-tkbash)
+	if ! [[ -z $RUNNINGPID ]]
 	then
-		echo "Updating..."
-		$TKBASHNAME $GUINAME button currtemp --text "$($REDFLUXNAME getinfo currtemp)K"
-		$TKBASHNAME $GUINAME button state --text "$($REDFLUXNAME getinfo state)"
+		if [[ $($TKBASHNAME $GUINAME --exist) = 1 ]]
+		then
+			echo "Updating..."
+			$TKBASHNAME $GUINAME button currtemp --text "$($REDFLUXNAME getinfo currtemp)K"
+			$TKBASHNAME $GUINAME button state --text "$($REDFLUXNAME getinfo state)"
+		else
+			exit
+		fi
 	else
 		exit
 	fi
