@@ -266,7 +266,8 @@ then
 	update
 	exit 0
 
-else
+elif [[ $ACTION = "" ]]
+then
 	check_running "$@"
 	cleanup
 	REGHOTKEYS=1
@@ -330,6 +331,24 @@ else
 	$TKBASHNAME $GUINAME button update -x 165 -y 28 -w 60 -h 30 --text "Refresh" --command "$SCRIPTNAME update"
 	
 	exit 0
+
+else
+	echo ""
+	echo "RedFlux GUI is a wrapper for RedShift inspired by f.lux"
+	echo "Actually it is a GUI of RedFlux CLI script."
+	echo ""
+	echo "To use it just run executable like 'redshif-gui'."
+	echo "Or you can use options described."
+	echo "Order of options is not important, if there are conflicting options, the last one is taken into account."
+	echo "RedFlux GUI detects absence of optional components and disables its support automatically, ignoring corresponding options."
+	echo ""
+	echo "Options:"
+	echo "--tray - enable tray support (default)"
+	echo "--no-tray - disable tray support"
+	echo "--hotkeys - enable hotkeys (default)"
+	echo "--no-hotkeys - disable hotkeys"
+	echo "--start-hidden - start hidden in tray if supported, otherwise start minimized"
+	echo "--no-start-hidden - do not start hidden (default)"
 
 fi
 
