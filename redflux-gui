@@ -189,6 +189,25 @@ about-window() {
 	$TKBASHNAME $GUIABOUTNAME label description-2 -x 60 -y 210 -w 220 -h 30 --text "inspired by f.lux"
 }
 
+show_help() {
+	echo ""
+	echo "RedFlux GUI is a wrapper for RedShift inspired by f.lux"
+	echo "Actually it is a GUI of RedFlux CLI script."
+	echo ""
+	echo "To use it just run executable like 'redshif-gui'."
+	echo "Or you can use options described."
+	echo "Order of options is not important, if there are conflicting options, the last one is taken into account."
+	echo "RedFlux GUI detects absence of optional components and disables its support automatically, ignoring corresponding options."
+	echo ""
+	echo "Options:"
+	echo "--tray - enable tray support (default)"
+	echo "--no-tray - disable tray support"
+	echo "--hotkeys - enable hotkeys (default)"
+	echo "--no-hotkeys - disable hotkeys"
+	echo "--start-hidden - start hidden in tray if supported, otherwise start minimized"
+	echo "--no-start-hidden - do not start hidden (default)"
+}
+
 if [[ $ACTION = "update" ]]
 then
 	update
@@ -266,35 +285,60 @@ then
 	update
 	exit 0
 
-elif [[ $ACTION = "" ]]
-then
+else
 	check_running "$@"
 	cleanup
+	
+	# Variable to check if there are valid option keys
+	HAVEVALIDKEYS=0
+	# Variable to count amount of all keys
+	KEYSCOUNT=0
+	
 	REGHOTKEYS=1
 	TRAY=1
 	STARTHIDDEN=0
 	for var in "$@"
 	do
+		KEYSCOUNT=$((KEYSCOUNT+1))
 		if [[ $var = "--hotkeys" ]]
 		then
 			REGHOTKEYS=1
+			HAVEVALIDKEYS=1
 		elif [[ $var = "--no-hotkeys" ]]
 		then
 			REGHOTKEYS=0
+			HAVEVALIDKEYS=1
 		elif [[ $var = "--tray" ]]
 		then
 			TRAY=1
+			HAVEVALIDKEYS=1
 		elif [[ $var = "--no-tray" ]]
 		then
 			TRAY=0
+			HAVEVALIDKEYS=1
 		elif [[ $var = "--start-hidden" ]]
 		then
 			STARTHIDDEN=1
+			HAVEVALIDKEYS=1
 		elif [[ $var = "--no-start-hidden" ]]
 		then
 			STARTHIDDEN=0
+			HAVEVALIDKEYS=1
 		fi
 	done
+	
+	# Zero key count is valid too, just start program
+	if [[ $KEYSCOUNT -eq 0 ]]
+	then
+		HAVEVALIDKEYS=1
+	fi
+	
+	if [[ $HAVEVALIDKEYS -eq 0 ]]
+	then
+		show_help
+		exit 1
+	fi
+	
 	if ! which yad
 	then
 		TRAY=0
@@ -332,24 +376,5 @@ then
 	
 	exit 0
 
-else
-	echo ""
-	echo "RedFlux GUI is a wrapper for RedShift inspired by f.lux"
-	echo "Actually it is a GUI of RedFlux CLI script."
-	echo ""
-	echo "To use it just run executable like 'redshif-gui'."
-	echo "Or you can use options described."
-	echo "Order of options is not important, if there are conflicting options, the last one is taken into account."
-	echo "RedFlux GUI detects absence of optional components and disables its support automatically, ignoring corresponding options."
-	echo ""
-	echo "Options:"
-	echo "--tray - enable tray support (default)"
-	echo "--no-tray - disable tray support"
-	echo "--hotkeys - enable hotkeys (default)"
-	echo "--no-hotkeys - disable hotkeys"
-	echo "--start-hidden - start hidden in tray if supported, otherwise start minimized"
-	echo "--no-start-hidden - do not start hidden (default)"
-
 fi
-
 
