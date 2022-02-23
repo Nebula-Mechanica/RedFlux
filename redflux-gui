@@ -29,6 +29,8 @@ MAXTEMP="6500"
 MINTEMP="1000"
 # Amount of temperature added or substracted when buttons "Warmer" or "Colder" used
 TWEAKTEMP="200"
+# Amount of brigtness added or substracted when buttons Brightness "+" or "-" used
+TWEAKBRIGHT="0.05"
 
 draw_gui() {
 echo "Drawing GUI"
@@ -37,10 +39,12 @@ echo "$ICONIMG" | base64 -d > "$ICONLOC"
 echo "Unpacked Resources"
 $TKBASHNAME $GUINAME --theme clam --title "RedFlux GUI" -w 470 -h 440 --icon "$ICONLOC" --onclose --command "$SCRIPTNAME close"
 echo "Drawing window"
-$TKBASHNAME $GUINAME label currtemp-label -x 15 -y 5 -w 130 -h 30 --text "Current Temperature:"
-$TKBASHNAME $GUINAME label currtemp -x 145 -y 5 -w 130 -h 30 --text "Unknown"
-$TKBASHNAME $GUINAME label state-label -x 15 -y 35 -w 130 -h 30 --text "Current State:"
-$TKBASHNAME $GUINAME label state -x 105 -y 35 -w 130 -h 30 --text "Unknown"
+$TKBASHNAME $GUINAME label currtemp-label -x 15 -y 5 -w 130 -h 30 --text "Temperature:"
+$TKBASHNAME $GUINAME label currtemp -x 105 -y 5 -w 130 -h 30 --text "Unknown"
+$TKBASHNAME $GUINAME label currbright-label -x 15 -y 25 -w 130 -h 30 --text "Brightness:"
+$TKBASHNAME $GUINAME label currbright -x 105 -y 25 -w 130 -h 30 --text "Unknown"
+$TKBASHNAME $GUINAME label state-label -x 15 -y 45 -w 130 -h 30 --text "State:"
+$TKBASHNAME $GUINAME label state -x 105 -y 45 -w 130 -h 30 --text "Unknown"
 $TKBASHNAME $GUINAME label status -x 20 -y 400 -w 200 -h 30 --text ""
 $TKBASHNAME $GUINAME button reset -x 40 -y 70 -w 140 -h 30 --text "Reset" --command "$SCRIPTNAME reset"
 $TKBASHNAME $GUINAME button inctemp -x 40 -y 110 -w 140 -h 30 --text "Colder" --command "$SCRIPTNAME increase"
@@ -56,9 +60,12 @@ $TKBASHNAME $GUINAME button presets-halogen -x 275 -y 235 -w 160 -h 30 --text "3
 $TKBASHNAME $GUINAME button presets-fluorescent -x 275 -y 275 -w 160 -h 30 --text "4200K Fluorescent" --command "$SCRIPTNAME set 4200"
 $TKBASHNAME $GUINAME button presets-sunlight -x 275 -y 315 -w 160 -h 30 --text "5000K Sunlight" --command "$SCRIPTNAME set 5000"
 $TKBASHNAME $GUINAME button presets-disabled -x 275 -y 355 -w 160 -h 30 --text "6500K Disabled" --command "$SCRIPTNAME set 6500"
-$TKBASHNAME $GUINAME text own-temp-text -x 275 -y 400 -w 35 -h 20 --text "4200" --ignore-newline
-$TKBASHNAME $GUINAME label own-temp-label -x 310 -y 401 -w 38 -h 20 --text "K"
-$TKBASHNAME $GUINAME button own-temp-button -x 323 -y 395 -w 112 -h 30 --text "Set Temperature" --command "$SCRIPTNAME set-custom"
+$TKBASHNAME $GUINAME label brightness -x 15 -y 407 -w 130 -h 30 --text "Brightness:"
+$TKBASHNAME $GUINAME button decbright -x 100 -y 400 -w 40 -h 30 --text "-" --command "$SCRIPTNAME decreasebright"
+$TKBASHNAME $GUINAME button incbright -x 160 -y 400 -w 40 -h 30 --text "+" --command "$SCRIPTNAME increasebright"
+$TKBASHNAME $GUINAME text own-temp-text -x 265 -y 400 -w 35 -h 20 --text "4200" --ignore-newline
+$TKBASHNAME $GUINAME label own-temp-label -x 300 -y 401 -w 38 -h 20 --text "K"
+$TKBASHNAME $GUINAME button own-temp-button -x 315 -y 395 -w 120 -h 30 --text "Set Temperature" --command "$SCRIPTNAME set-custom"
 $TKBASHNAME $GUINAME label spectrum-label -x 30 -y 225 -w 190 -h 30 --text "Color Distortion Visualization"
 $TKBASHNAME $GUINAME image spectrum -x 15 -y 245 -w 200 -h 150 --image "$SPECTRUMLOC" --command "$SCRIPTNAME set 6500"
 $TKBASHNAME $GUINAME label presets-redscale-color -x 250 -y 40 -w 20 -h 20 --background \#ff3800
@@ -81,6 +88,7 @@ update() {
 		then
 			echo "Updating..."
 			$TKBASHNAME $GUINAME button currtemp --text "$($REDFLUXNAME getinfo currtemp)K"
+			$TKBASHNAME $GUINAME button currbright --text "$($REDFLUXNAME getinfo currbright)"
 			$TKBASHNAME $GUINAME button state --text "$($REDFLUXNAME getinfo state)"
 		else
 			exit
@@ -223,6 +231,18 @@ then
 elif [[ $ACTION = "decrease" ]]
 then
 	$REDFLUXNAME -$TWEAKTEMP
+	#update
+	exit 0
+	
+elif [[ $ACTION = "increasebright" ]]
+then
+	$REDFLUXNAME $TWEAKBRIGHT
+	#update
+	exit 0
+
+elif [[ $ACTION = "decreasebright" ]]
+then
+	$REDFLUXNAME -$TWEAKBRIGHT
 	#update
 	exit 0
 
@@ -373,7 +393,7 @@ else
 		fi
 	fi
 	
-	$TKBASHNAME $GUINAME button update -x 165 -y 28 -w 60 -h 30 --text "Refresh" --command "$SCRIPTNAME update"
+	$TKBASHNAME $GUINAME button update -x 170 -y 17 -w 60 -h 30 --text "Refresh" --command "$SCRIPTNAME update"
 	
 	exit 0
 
