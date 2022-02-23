@@ -216,31 +216,31 @@ then
 elif [[ $ACTION = "increase" ]]
 then
 	$REDFLUXNAME $TWEAKTEMP
-	update
+	#update
 	exit 0
 
 elif [[ $ACTION = "decrease" ]]
 then
 	$REDFLUXNAME -$TWEAKTEMP
-	update
+	#update
 	exit 0
 
 elif [[ $ACTION = "toggle" ]]
 then
 	$REDFLUXNAME toggle
-	update
+	#update
 	exit 0
 
 elif [[ $ACTION = "reset" ]]
 then
 	$REDFLUXNAME reset
-	update
+	#update
 	exit 0
 
 elif [[ $ACTION = "set" ]]
 then
 	$REDFLUXNAME set "$2"
-	update
+	#update
 	exit 0
 
 elif [[ $ACTION = "close" ]]
@@ -282,7 +282,7 @@ then
 		exit 1
 	fi
 	$REDFLUXNAME set "$ENTERED_TEMP"
-	update
+	#update
 	exit 0
 
 else
