@@ -18,6 +18,7 @@ SENDUPDATES=1
 
 ACTION="$1"
 CURRFILE="$TMPDIR/.redflux_currtemp_$USER"
+CURRBRIGHTFILE="$TMPDIR/.redflux_currbright_$USER"
 CURRDISFILE="$TMPDIR/.redflux_disabled_$USER"
 UPDFILE="$TMPDIR/.redflux_update_$USER"
 
@@ -29,6 +30,12 @@ MAXTEMP="6500"
 MINTEMP="1000"
 # Default temperature, could be safely adjusted to one comfortable for you
 DEFAULTTEMP="4200"
+# Max brightness, equals to RedShift disabled
+MAXBRIGHT="1.0"
+# Min brightness, limitation of RedShift
+MINBRIGHT="0.1"
+# Default brightness, unchanged brightness of screen by default
+DEFAULTBRIGHT="1.0"
 
 callredshift() {
 	redshift -PO $1
@@ -100,7 +107,28 @@ set_temp() {
 	notification "Temp set at "$CURRTEMP"K!"
 }
 
+set_bright() {
+	SETBRIGHT="$1"
+	if awk "BEGIN {exit !($SETBRIGHT > $MAXBRIGHT)}" || awk "BEGIN {exit !($SETBRIGHT < $MINBRIGHT)}"
+	then
+		echo "Out of range!"
+		exit 1
+	fi
+		echo "Setting" "$SETBRIGHT""..."
+	echo $SETBRIGHT > $CURRBRIGHTFILE
+	CURRBRIGHT=$SETBRIGHT
+	if ! [ -f $CURRDISFILE ]
+	then
+		callredshift "$CURRTEMP -b $SETBRIGHT"
+	fi
+	echo "Set at "$SETBRIGHT"!"
+	send-update
+	notification "Brightness set at "$SETBRIGHT"!"
+}
+
+
 CURRTEMP="$(cat $CURRFILE)"
+CURRBRIGHT="$(cat $CURRBRIGHTFILE)"
 
 # Parsing command line option keys
 for var in "$@"
@@ -138,12 +166,14 @@ fi
 if [[ $ACTION != "getinfo" ]]
 then
 	echo "Current temp: "$CURRTEMP"K"
+	echo "Current brightness: "$CURRBRIGHT
 fi
 
 #echo $ACTION
 if [[ $ACTION = "init" ]]
 then
 	echo "Initialiazing..."
+	echo $DEFAULTBRIGHT > $CURRBRIGHTFILE
 	echo $DEFAULTTEMP > $CURRFILE
 	callredshift $DEFAULTTEMP
 	send-update
@@ -185,6 +215,10 @@ then
 	if ! echo "$2" | grep [^0-9+\-] -q
 	then
 		set_temp $2
+		exit 0
+	elif echo "$2" | grep [0-9]\.[0-9] -q
+	then
+		set_bright $2
 		exit 0
 	else
 		echo "Wrong syntax!"
@@ -240,6 +274,12 @@ then
 	echo "Modyfing ""$ACTION""K..."
 	MODTEMP=$(($CURRTEMP + $ACTION))
 	set_temp $MODTEMP
+	exit 0
+elif echo "$ACTION" | grep [+\-]\\?0\.[0-9] -q
+then
+	echo "Modyfing brightness ""$ACTION"""
+	MODBRIGHT=$(awk "BEGIN {print $CURRBRIGHT + $ACTION}")
+	set_bright "$MODBRIGHT"
 	exit 0
 else
 	echo "Wrong syntax!"
