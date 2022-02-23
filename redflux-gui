@@ -137,6 +137,7 @@ close() {
 		then
 			echo "Stopping tray process $TRAYPIDTOSTOP..."
 			kill "$TRAYPIDTOSTOP"
+			pkill -9 -f "yad.*redflux-gui"
 			rm "$TRAYPIDFILE"
 			rm "$TRAYSTATEFILE"
 		fi
