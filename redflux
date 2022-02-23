@@ -236,6 +236,14 @@ then
 	then
 		echo $DEFAULTTEMP
 		exit 0
+	elif [[ $SUBACTION = "currbright" ]]
+	then
+		echo $CURRBRIGHT
+		exit 0
+	elif [[ $SUBACTION = "defaultbright" ]]
+	then
+		echo $DEFAULTBRIGHT
+		exit 0
 	elif [[ $SUBACTION = "state" ]]
 	then
 		if [ -f $CURRDISFILE ]
