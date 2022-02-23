@@ -274,8 +274,8 @@ then
 	echo "reset: resets redshift to "$DEFAULTTEMP"K"
 	echo "init: same as reset, but without notification"
 	echo "toggle: turns it on or off depending on current state"
-	echo "set <TEMP>: sets current temp ($MINTEMP-$MAXTEMP) or brightness ($MINBRIGHT-$MAXBRIGHT) to value <TEMP>"
-	echo "or enter value to add to current temp or brightness (negative to substract)"
+	echo "set <VALUE>: sets current temp ($MINTEMP-$MAXTEMP) or brightness ($MINBRIGHT-$MAXBRIGHT) to value <VALUE>"
+	echo "or enter value to add to current temp or brightness (<VALUE>,+<VALUE>,-<VALUE>)"
 	exit 0
 elif ! echo "$ACTION" | grep [^0-9+\-] -q
 then
